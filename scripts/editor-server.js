@@ -46,7 +46,7 @@ const DEFAULT_SLIDES_DIR = 'slides';
 const CODEX_MODELS = ['gpt-5.4', 'gpt-5.3-codex', 'gpt-5.3-codex-spark'];
 const ALL_MODELS = [...GEMINI_MODELS, ...CODEX_MODELS, ...CLAUDE_MODELS];
 const DEFAULT_CODEX_MODEL = GEMINI_MODELS[1]; // gemini-1.5-flash
-const SLIDE_FILE_PATTERN = /^slide-.*\.html$/i;
+const SLIDE_FILE_PATTERN = /\.html$/i;
 
 const MAX_RUNS = 200;
 const MAX_LOG_CHARS = 800_000;
@@ -94,6 +94,22 @@ function parseArgs(argv) {
 
     if (arg.startsWith('--slides-dir=')) {
       opts.slidesDir = arg.slice('--slides-dir='.length);
+      continue;
+    }
+
+    if (arg === '--file') {
+      opts.file = argv[i + 1];
+      i += 1;
+      continue;
+    }
+
+    if (arg.startsWith('--file=')) {
+      opts.file = arg.slice('--file='.length);
+      continue;
+    }
+
+    if (!arg.startsWith('--') && !opts.file) {
+      opts.file = arg;
       continue;
     }
 
@@ -166,7 +182,10 @@ function toSlidePathLabel(slidesDirectory, slideFile) {
   return toPosixPath(label);
 }
 
-async function listSlideFiles(slidesDirectory) {
+async function listSlideFiles(slidesDirectory, specificFile = null) {
+  if (specificFile) {
+    return [basename(specificFile)];
+  }
   const entries = await readdir(slidesDirectory, { withFileTypes: true });
   return entries
     .filter((entry) => entry.isFile() && SLIDE_FILE_PATTERN.test(entry.name))
@@ -469,6 +488,13 @@ function createRunStore() {
 
 async function startServer(opts) {
   await loadDeps();
+  
+  if (opts.file) {
+    const fullPath = resolve(process.cwd(), opts.file);
+    opts.slidesDir = dirname(fullPath);
+    opts.file = basename(fullPath);
+  }
+
   const slidesDirectory = resolve(process.cwd(), opts.slidesDir);
   await mkdir(slidesDirectory, { recursive: true });
 
@@ -520,7 +546,7 @@ async function startServer(opts) {
 
   app.get('/api/slides', async (_req, res) => {
     try {
-      const files = await listSlideFiles(slidesDirectory);
+      const files = await listSlideFiles(slidesDirectory, opts.file);
       res.json(files);
     } catch (err) {
       res.status(500).json({ error: err.message });

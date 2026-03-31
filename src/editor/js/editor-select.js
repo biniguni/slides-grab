@@ -51,9 +51,7 @@ export function isSelectableElement(el) {
 export function isTextEditableElement(el) {
   if (!isElementNode(el)) return false;
   const tag = el.tagName.toLowerCase();
-  if (!DIRECT_TEXT_TAGS.has(tag)) return false;
-  const INLINE_TAGS = new Set(['BR','B','STRONG','I','EM','U','S','SPAN','A','SMALL','SUB','SUP','MARK','CODE']);
-  return Array.from(el.children).every(c => INLINE_TAGS.has(c.tagName));
+  return DIRECT_TEXT_TAGS.has(tag);
 }
 
 export function getSelectableTargetAt(clientX, clientY) {
