@@ -1,0 +1,70 @@
+# Codex Setup And Usage
+
+This guide is for running `slides-grab` with Codex and shared Vercel-installed skills.
+
+## 1) Install the npm Package
+
+```bash
+npm install slides-grab
+npx playwright install chromium
+```
+
+Verify:
+
+```bash
+slides-grab --help
+```
+
+## 2) Install Codex Skills
+
+From the local npm install:
+
+```bash
+npx skills add ./node_modules/slides-grab -g -a codex --yes --copy
+```
+
+Then restart Codex so the installed skills are loaded.
+
+## 3) Developer / Repo Clone Path
+
+If you want to work on `slides-grab` itself instead of consuming the package:
+
+```bash
+git clone https://github.com/vkehfdl1/slides-grab.git && cd slides-grab
+npm ci
+npx playwright install chromium
+npx skills add . -g -a codex --yes --copy
+```
+
+## 4) Codex Workflow
+
+Installed skill names:
+
+- `slides-grab-plan`
+- `slides-grab-design`
+- `slides-grab-export`
+- `slides-grab`
+
+Run one deck per workspace folder:
+
+Prerequisite: create or generate `decks/my-deck/` with `slide-*.html` first. These commands do not work against an empty clone.
+
+```bash
+slides-grab edit --slides-dir decks/my-deck
+slides-grab build-viewer --slides-dir decks/my-deck
+slides-grab validate --slides-dir decks/my-deck
+slides-grab pdf --slides-dir decks/my-deck --output decks/my-deck.pdf
+slides-grab pdf --slides-dir decks/my-deck --mode print --output decks/my-deck-searchable.pdf
+slides-grab convert --slides-dir decks/my-deck --output decks/my-deck.pptx
+slides-grab figma --slides-dir decks/my-deck --output decks/my-deck-figma.pptx
+```
+
+`slides-grab pdf` defaults to `--mode capture` for browser-faithful rendering. Switch to `--mode print` when you need searchable/selectable text in the exported PDF.
+
+## 5) Recommended Codex Kickoff Prompt
+
+Copy-paste into Codex:
+
+```text
+Read docs/installation/codex.md first and follow it exactly. Install slides-grab with npm, install the shared skills from ./node_modules/slides-grab using Vercel Agent Skills, use slides-grab-plan/design/export (or slides-grab), keep each deck in decks/<deck-name>, and run validate before convert/pdf.
+```

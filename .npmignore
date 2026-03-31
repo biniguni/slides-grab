@@ -1,0 +1,25 @@
+# Dev / CI
+.github/
+.claude/
+tests/
+docs/
+scripts/build-viewer.js
+scripts/install-codex-skills.js
+
+# Generated outputs
+slides/
+decks/
+*.pptx
+*.pdf
+*.dmg
+thumbnail-grid.png
+slide-outline.md
+
+# Misc
+.DS_Store
+.env*
+.vscode/
+.idea/
+*.log
+*.tmp
+.ralph/

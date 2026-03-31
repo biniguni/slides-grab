@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    html, body {
+      margin: 0;
+      width: 720pt;
+      height: 405pt;
+      overflow: hidden;
+    }
+
+    body {
+      position: relative;
+      font-family: Pretendard, sans-serif;
+      background-image: url("./assets/example.svg");
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    .card {
+      position: absolute;
+      left: 36pt;
+      bottom: 36pt;
+      width: 280pt;
+      padding: 18pt 20pt;
+      background: rgba(255, 255, 255, 0.92);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Body background asset</h1>
+    <p>Validator should preserve ./assets URLs for body background-image rules.</p>
+  </div>
+</body>
+</html>

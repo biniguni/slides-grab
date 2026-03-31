@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+~$*.pptx
+~$*.docx
+
+# Build outputs
+dist/
+build/
+*.log
+*.tgz
+
+# Python (if any)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# PPT temporary files
+~$*.ppt*
+
+# Generated slides and viewer
+slides/
+decks/
+*.pptx
+*.pdf
+*.dmg
+
+# Generated outlines and thumbnails
+slide-outline.md
+thumbnail-grid.png
+screenshots/
+
+# Internal state
+.ralph/
+.omx/
+.githubclaw/
