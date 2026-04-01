@@ -53,20 +53,42 @@ npm ci && npx playwright install chromium
 
 > Requires **Node.js >= 18**.
 
-### No-clone install
+### No-clone install (가장 권장하는 방법)
+
+Git을 설치하거나 복잡한 과정 없이, 아래 명령어 한 줄로 사용자님이 만드신 **커스텀 에디터**를 즉시 설치할 수 있습니다.
 
 ```bash
-npm install slides-grab
+# 1. 사용자님의 GitHub 저장소에서 바로 설치 (가장 확실한 방법)
+npm install https://github.com/biniguni/slides-grab.git
+
+# 2. 브라우저 엔진 설치
 npx playwright install chromium
-npx skills add ./node_modules/slides-grab -g -a codex -a claude-code --yes --copy
 ```
 
 ### 🚀 Gemini 연동 및 실행 방법 (Team Edition)
 
-이 레포지토리의 커스텀 버전은 팀 차원에서의 원활한 활용을 위해 **Google Gemini API**가 직접 내장되어 있습니다. 별도의 에이전트 CLI(Claude Code 등) 설치 없이도 즉시 사용 가능합니다.
+이 버전은 팀 차원에서의 원활한 활용을 위해 **Google Gemini API**가 내장된 **커스텀 에디터**입니다. 이 저장소를 직접 복제하여 사용해야 모든 기능을 원활하게 쓸 수 있습니다.
 
-#### 1. 사전 준비
-터미널(또는 시스템 환경변수)에 본인의 Gemini API Key를 등록해야 합니다. (기본 모델: **Gemini 1.5 Flash**)
+#### 0. 필수 환경 (Node.js 설치)
+이 에디터는 파일 저장 및 AI 기능을 위해 **Node.js(18.x 이상)**가 반드시 필요합니다.
+- **다운로드**: [Node.js 공식 홈페이지 (LTS 버전 추천)](https://nodejs.org/)
+- **확인**: 터미널에서 `node -v` 입력 시 버전이 나오면 성공입니다.
+
+#### 1. 저장소 복제 및 준비
+```bash
+# 1. 이 팀 전용 저장소를 내 컴퓨터로 가져옵니다.
+git clone https://github.com/vkehfdl1/slides-grab.git
+cd slides-grab
+
+# 2. 필요한 모든 부품(의존성)을 설치합니다. (Playwright, PptxGenJS 등)
+npm install
+
+# 3. 브라우저 엔진을 설치합니다.
+npx playwright install chromium
+```
+
+#### 2. 사전 준비 (API Key)
+터미널에 본인의 Gemini API Key를 등록해야 합니다.
 
 ```bash
 # Windows (PowerShell)
