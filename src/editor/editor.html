@@ -176,11 +176,11 @@
       flex: 1;
       min-height: 0;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
+      align-items: flex-start;
+      justify-content: flex-start;
+      overflow: auto !important; /* 상하좌우 스크롤 강제 활성화 */
       position: relative;
-      padding: 28px;
+      padding: 0;
       max-width: 100%;
       max-height: 100%;
     }
@@ -447,15 +447,15 @@
 
     .slide-wrapper {
       position: relative;
-      width: 960px;
-      height: 540px;
-      transform-origin: top center;
+      width: 1920px;
+      height: 1080px;
+      transform-origin: top left;
       z-index: 1;
     }
 
     .slide-wrapper iframe {
-      width: 960px;
-      height: 540px;
+      width: 1920px;
+      height: 1080px;
       border: none;
       border-radius: 0;
       background: #fff;
@@ -1593,12 +1593,12 @@
           <div class="slide-wrapper" id="slide-wrapper">
             <button class="clear-overlay-btn" id="btn-clear-bboxes" title="Clear all boxes on current slide">Clear Boxes</button>
             <iframe id="slide-iframe" sandbox="allow-same-origin allow-scripts" loading="eager"></iframe>
-            <div class="bbox-layer" id="bbox-layer"></div>
-            <div class="object-layer" id="object-layer">
-              <div class="object-outline hover" id="object-hover-box"></div>
-              <div class="object-outline selected" id="object-selected-box"></div>
+            <div class="bbox-layer" id="bbox-layer" style="pointer-events: none !important;"></div>
+            <div class="object-layer" id="object-layer" style="z-index: 1200 !important; pointer-events: none !important;">
+              <div class="object-outline hover" id="object-hover-box" style="pointer-events: none !important;"></div>
+              <div class="object-outline selected" id="object-selected-box" style="cursor: move !important; pointer-events: auto !important;"></div>
             </div>
-            <div class="draw-layer" id="draw-layer">
+            <div class="draw-layer" id="draw-layer" style="z-index: 1100 !important; pointer-events: none !important;">
               <div class="draw-box" id="draw-box"></div>
             </div>
           </div>
@@ -1607,18 +1607,18 @@
 
       <aside class="editor-sidebar" id="editor-sidebar">
         <div class="sidebar-mode-tabs">
-          <button type="button" class="sidebar-mode-tab active" id="tool-mode-draw" aria-pressed="true">
+          <button type="button" class="sidebar-mode-tab" id="tool-mode-draw" aria-pressed="false" disabled>
             <svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v14H5zM9 5v14M15 5v14M5 9h14M5 15h14"/></svg>
-            BBox
+            BBox (준비 중)
           </button>
-          <button type="button" class="sidebar-mode-tab" id="tool-mode-select" aria-pressed="false">
+          <button type="button" class="sidebar-mode-tab active" id="tool-mode-select" aria-pressed="true">
             <svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 4 11 8-5 1.2L14.6 20l-2.5 1-2.6-6.8L6 15z"/></svg>
             Select
           </button>
         </div>
 
         <div class="sidebar-body" id="sidebar-body">
-          <div class="sidebar-panel" id="bbox-toolbar">
+          <div class="sidebar-panel" id="bbox-toolbar" hidden>
             <div class="sidebar-section">
               <span class="sidebar-label" id="bbox-count">0 pending · 0 review</span>
               <div class="context-chips" id="context-chip-list"></div>
@@ -1641,7 +1641,7 @@
             </button>
           </div>
 
-          <div class="sidebar-panel" id="select-toolbar" hidden>
+          <div class="sidebar-panel" id="select-toolbar">
             <div class="sidebar-section">
               <div class="sidebar-object-card" id="selected-object-mini" style="display:none">
                 <span class="mini-tag" id="mini-tag"></span>
@@ -1710,6 +1710,11 @@
                 </button>
               </div>
             </div>
+            <div class="sidebar-divider"></div>
+            <button class="sidebar-btn sidebar-btn-danger" id="btn-delete-object" title="Delete selected element (Backspace/Delete)">
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"/></svg>
+              Delete Object
+            </button>
           </div>
         </div>
 

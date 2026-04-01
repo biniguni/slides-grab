@@ -325,7 +325,7 @@ export function getDetailedDesignSkillPrompt() {
   ].filter(Boolean).join('\n\n');
 }
 
-export function buildCodexEditPrompt({ slideFile, slidePath, userPrompt, selections = [] }) {
+export function buildCodexEditPrompt({ slideFile, slidePath, userPrompt, selections = [], markedHtml = '' }) {
   const sanitizedPrompt = typeof userPrompt === 'string' ? userPrompt.trim() : '';
   if (!sanitizedPrompt) {
     throw new Error('Prompt must be a non-empty string.');
@@ -345,7 +345,8 @@ export function buildCodexEditPrompt({ slideFile, slidePath, userPrompt, selecti
     return [
       `Region ${index + 1}`,
       `- Bounding box: x=${bbox.x}, y=${bbox.y}, width=${bbox.width}, height=${bbox.height}`,
-      '- XPath targets:',
+      `- Search for elements with attribute: data-agent-target="${index + 1}"`,
+      '- XPath targets (for reference):',
       ...formatTargets(selection.targets),
       '',
     ];
@@ -380,29 +381,31 @@ export function buildCodexEditPrompt({ slideFile, slidePath, userPrompt, selecti
     : [];
 
   return [
-    `Edit ${normalizedSlidePath} only.`,
+    `CRITICAL: Edit ONLY the slide file ${normalizedSlidePath}.`,
     '',
     ...skillLines,
     ...detailedSkillLines,
     ...slideArtDirectionLines,
-    'User edit request:',
+    'User request:',
     sanitizedPrompt,
     '',
-    'Selected regions on slide (960x540 coordinate space):',
+    'Selected regions (960x540 coordinates) and their marked targets in HTML:',
     ...selectionLines,
-    'Rules:',
-    '- Edit only the requested slide HTML file among slide-*.html files.',
-    '- Do not modify any other slide HTML files unless explicitly requested.',
-    '- Keep existing structure/content unless the request requires a change.',
-    '- Keep slide dimensions at 720pt x 405pt.',
-    '- Keep text in semantic tags (<p>, <h1>-<h6>, <ul>, <ol>, <li>).',
-    '- You may add or update supporting files required for the requested slide, including local assets under <slides-dir>/assets/ and tldraw source/export files used to generate those assets.',
-    '- If you create or update a supporting asset, store it under <slides-dir>/assets/ and reference it from the requested slide as ./assets/<file>.',
-    '- Keep local assets under ./assets/ and preserve portable relative paths.',
-    '- Do not modify unrelated assets, shared resources, or generated files that are not required for the requested slide.',
-    '- Do not persist runtime-only editor/viewer injections such as <base>, debug scripts, or viewer wrapper markup into the slide file.',
-    '- IMPORTANT: Output the ENTIRE rewritten HTML file enclosed in ```html and ``` blocks. Do not summarize or provide partial snippets.',
-    '- Return after applying the change.',
+    '',
+    'STRICT RULES FOR EDITING:',
+    '- DO NOT change any HTML structure, styles, or content OUTSIDE the elements marked with [data-agent-target].',
+    '- Elements that need modification are explicitly marked with [data-agent-target="X"] where X is the Region number.',
+    '- Maintain 100% of the existing CSS classes, fonts, and layout system.',
+    '- Do not remove original attributes from the marked elements unless necessary for the requested edit.',
+    '- Keep all original spacing and formatting outside the edit area.',
+    '- Output the ENTIRE updated HTML file inside a single ```html block.',
+    '',
+    'HERE IS THE CURRENT HTML CODE WITH TARGET MARKERS (data-agent-target):',
+    '```html',
+    markedHtml || '(Markup failed, proceed with original source)',
+    '```',
+    '',
+    '- Return immediately after providing the code.',
   ].join('\n');
 }
 
@@ -427,7 +430,7 @@ export function buildCodexExecArgs({ prompt, imagePath, model }) {
 }
 
 export const CLAUDE_MODELS = ['claude-opus-4-6', 'claude-sonnet-4-6'];
-export const GEMINI_MODELS = ['gemini-3.1-pro', 'gemini-3.1-flash'];
+export const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-3.1-pro-preview', 'gemini-3.1-flash-preview', 'gemini-3.1-pro', 'gemini-3-flash'];
 
 export function isClaudeModel(model) {
   return typeof model === 'string' && CLAUDE_MODELS.includes(model.trim());

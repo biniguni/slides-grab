@@ -24,47 +24,6 @@ The editor is pure javascript file. You can easily add up new features like addi
 
 ---
 
-## 🚀 Gemini 연동 및 실행 방법 (Team Edition)
-
-이 레포지토리의 커스텀 버전은 팀 차원에서의 원활한 활용을 위해 **Google Gemini API**가 직접 내장되어 있습니다. 별도의 에이전트 CLI(Claude Code 등) 설치 없이도 즉시 사용 가능합니다.
-
-### 1. 사전 준비
-터미널(또는 시스템 환경변수)에 본인의 Gemini API Key를 등록해야 합니다. (기본 모델: **Gemini 1.5 Flash**)
-
-```bash
-# Windows (PowerShell)
-$env:GEMINI_API_KEY="본인의_API_키"
-
-# macOS / Linux
-export GEMINI_API_KEY="본인의_API_키"
-```
-
-### 2. 에디터 실행
-설치 후 아래 명령어를 통해 비주얼 에디터를 실행할 수 있습니다.
-
-```bash
-# 의존성 설치 (최초 1회)
-npm install
-
-# 방법 A: 기본 실행 (slides/ 폴더 내 파일 편집)
-npm run edit
-
-# 방법 B: 특정 HTML 파일 하나만 바로 편집하기 (추천)
-node scripts/editor-server.js 내파일.html
-
-# 방법 C: 현재 폴더의 모든 HTML 파일 목록 보기
-node scripts/editor-server.js .
-```
-
-실행 후 브라우저에서 출력되는 주소(보통 `http://localhost:3456`)로 접속하세요.
-
-### 3. 주요 특징
-- **기본 모델**: `gemini-1.5-flash`로 설정되어 비용 효율이 매우 높습니다.
-- **강력한 텍스트 편집**: `h1-h6`, `p` 뿐만 아니라 `div`, `span`, `strong` 등 모든 텍스트 요소의 색상과 크기를 자유롭게 수정할 수 있습니다.
-- **Agent Edit**: 슬라이드 영역을 드래그한 뒤 수정을 지시하면 Gemini가 실시간으로 HTML을 수정합니다.
-- **초경량**: 별도의 외부 에이전트 프로그램 없이 순수 Node.js 환경에서 작동하므로 가볍고 빠릅니다.
-
----
 
 
 ## Quick Start
@@ -101,6 +60,44 @@ npm install slides-grab
 npx playwright install chromium
 npx skills add ./node_modules/slides-grab -g -a codex -a claude-code --yes --copy
 ```
+
+### 🚀 Gemini 연동 및 실행 방법 (Team Edition)
+
+이 레포지토리의 커스텀 버전은 팀 차원에서의 원활한 활용을 위해 **Google Gemini API**가 직접 내장되어 있습니다. 별도의 에이전트 CLI(Claude Code 등) 설치 없이도 즉시 사용 가능합니다.
+
+#### 1. 사전 준비
+터미널(또는 시스템 환경변수)에 본인의 Gemini API Key를 등록해야 합니다. (기본 모델: **Gemini 1.5 Flash**)
+
+```bash
+# Windows (PowerShell)
+$env:GEMINI_API_KEY="본인의_API_키"
+
+# macOS / Linux
+export GEMINI_API_KEY="본인의_API_키"
+```
+
+#### 2. 에디터 실행
+설치 후 아래 명령어를 통해 비주얼 에디터를 실행할 수 있습니다.
+
+```bash
+# 의존성 설치 (최초 1회)
+npm install
+
+# 방법 A: 기본 실행 (slides/ 폴더 내 파일 편집)
+npm run edit
+
+# 방법 B: 특정 HTML 파일 하나만 바로 편집하기 (추천)
+node scripts/editor-server.js 내파일.html
+
+# 방법 C: 현재 폴더의 모든 HTML 파일 목록 보기
+node scripts/editor-server.js .
+```
+
+#### 3. 주요 특징
+- **기본 모델**: `gemini-1.5-flash`로 설정되어 비용 효율이 매우 높습니다.
+- **강력한 텍스트 편집**: 모든 텍스트 요소의 색상과 크기를 자유롭게 수정할 수 있습니다.
+- **Agent Edit**: 슬라이드 영역을 드래그한 뒤 수정을 지시하면 Gemini가 실시간으로 HTML을 수정합니다.
+- **초경량**: 별도의 외부 프로그램 없이 순수 Node.js 환경에서 작동합니다.
 
 ## Why This Project?
 

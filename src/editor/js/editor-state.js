@@ -1,7 +1,7 @@
 // editor-state.js — State variables, constants, Maps/Sets
 
-export const SLIDE_W = 960;
-export const SLIDE_H = 540;
+export const SLIDE_W = 1920;
+export const SLIDE_H = 1080;
 export const TOOL_MODE_DRAW = 'draw';
 export const TOOL_MODE_SELECT = 'select';
 export const POPOVER_TEXT = 'text';
@@ -27,6 +27,8 @@ export const state = {
   availableModels: DEFAULT_MODELS.slice(),
   defaultModel: DEFAULT_MODELS[0],
   selectedModel: DEFAULT_MODELS[0],
-  toolMode: TOOL_MODE_DRAW,
+  toolMode: TOOL_MODE_SELECT,
   hoveredObjectXPath: '',
+  undoStack: [],
+  maxHistorySize: 50,
 };

@@ -15,14 +15,10 @@ let _onBboxChange = () => {};
 export function onBboxChange(fn) { _onBboxChange = fn; }
 
 export function scaleSlide() {
-  const padX = 12;
-  const padY = 12;
-  const availW = slideStage.clientWidth - padX;
-  const availH = slideStage.clientHeight - padY;
-  if (availW <= 0 || availH <= 0) return;
-
-  const scale = Math.min(availW / SLIDE_W, availH / SLIDE_H, 1);
+  // 원본 HTML의 크기를 그대로 유지(100%)하여 가독성 확보
+  const scale = 1;
   slideWrapper.style.transform = `scale(${scale})`;
+  slideWrapper.style.transformOrigin = 'top left'; // 스크롤 시 위치 정렬
 }
 
 export function renderContextChips() {

@@ -300,11 +300,14 @@ function spawnClaudeEdit({ prompt, imagePath, model, cwd, onLog }) {
 }
 
 async function spawnGeminiEdit({ prompt, imagePath, model, slidePath, onLog }) {
+  console.log(`[Gemini] Starting edit process with model: "${model}"`);
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
+    console.error('[Gemini] FATAL ERROR: GEMINI_API_KEY is not set in your environment variables.');
     onLog('stderr', '[Gemini] Error: GEMINI_API_KEY environment variable is not set.\n');
     return { code: 1, message: 'Missing API Key' };
   }
+  console.log(`[Gemini] API Key check: OK (Key exists)`);
 
   onLog('stdout', `[Gemini] Starting edit request to ${model}...\n`);
 
@@ -361,13 +364,17 @@ async function spawnGeminiEdit({ prompt, imagePath, model, slidePath, onLog }) {
       return { code: 0, message: 'Gemini edit completed (fallback to raw output)' };
     }
 
-    const htmlContent = match[1].trim();
+    let htmlContent = match[1].trim();
+    // 3. AI가 보낸 결과물에서 마커 제거
+    htmlContent = htmlContent.replace(/\sdata-agent-target="[\d]+"/g, '');
+    
     await writeFile(slidePath, htmlContent, 'utf8');
-    onLog('stdout', `[Gemini] Successfully wrote ${Buffer.byteLength(htmlContent, 'utf8')} bytes to ${slidePath}.\n`);
+    onLog('stdout', `[Gemini] Successfully wrote ${Buffer.byteLength(htmlContent, 'utf8')} bytes to ${slidePath} (cleaned from markers).\n`);
 
     return { code: 0, message: 'Gemini edit completed' };
 
   } catch (error) {
+    console.error(`\n[Gemini] FATAL ERROR: ${error.message}`);
     onLog('stderr', `\n[Gemini] Request failed: ${error.message}\n`);
     return { code: 1, message: error.message };
   }
@@ -647,6 +654,10 @@ async function startServer(opts) {
 
   app.post('/api/apply', async (req, res) => {
     const { slide, prompt, selections, model } = req.body ?? {};
+    console.log(`\n>>> [Server] New Edit Request Received!`);
+    console.log(`    Slide: ${slide}`);
+    console.log(`    Model: ${model}`);
+    console.log(`    Prompt: "${prompt?.slice(0, 50)}..."`);
 
     if (!slide || typeof slide !== 'string' || !SLIDE_FILE_PATTERN.test(slide)) {
       return res.status(400).json({ error: 'Missing or invalid `slide`.' });
@@ -701,6 +712,7 @@ async function startServer(opts) {
     const annotatedPath = join(tmpPath, 'slide-annotated.png');
 
     try {
+      let markedHtml = '';
       await withScreenshotPage(async (page) => {
         await screenshotMod.captureSlideScreenshot(
           page,
@@ -709,6 +721,25 @@ async function startServer(opts) {
           `http://localhost:${opts.port}/slides`,
           { useHttp: true },
         );
+
+        // 1. 브라우저에서 마커 주입 및 마킹된 HTML 추출
+        const result = await page.evaluate((selections) => {
+          selections.forEach((sel, idx) => {
+            (sel.targets || []).forEach(target => {
+              try {
+                const result = document.evaluate(target.xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                const node = result.singleNodeValue;
+                if (node && node.setAttribute) {
+                  node.setAttribute('data-agent-target', (idx + 1).toString());
+                }
+              } catch (e) {
+                console.error('XPath evaluation failed:', e);
+              }
+            });
+          });
+          return { markedHtml: document.documentElement.outerHTML };
+        }, normalizedSelections);
+        markedHtml = result.markedHtml;
       });
 
       const scaledBoxes = normalizedSelections.map((selection) =>
@@ -721,15 +752,18 @@ async function startServer(opts) {
 
       await writeAnnotatedScreenshot(screenshotPath, annotatedPath, scaledBoxes);
 
+      // 2. AI에게 보낼 프롬프트 구성 (마킹된 HTML 반영)
       const codexPrompt = buildCodexEditPrompt({
         slideFile: slide,
         slidePath: toSlidePathLabel(slidesDirectory, slide),
         userPrompt: prompt,
         selections: normalizedSelections,
+        markedHtml: markedHtml
       });
 
       const usesClaude = isClaudeModel(selectedModel);
       const usesGemini = isGeminiModel(selectedModel);
+      console.log(`[Server] Engine determined: ${usesGemini ? 'Gemini' : (usesClaude ? 'Claude' : 'Codex')}`);
       const spawnEdit = usesGemini ? spawnGeminiEdit : (usesClaude ? spawnClaudeEdit : spawnCodexEdit);
       const result = await spawnEdit({
         prompt: codexPrompt,
@@ -743,6 +777,7 @@ async function startServer(opts) {
         },
       });
 
+      console.log(`[Server] API process result code: ${result.code}`);
       const engineLabel = usesGemini ? 'Gemini' : (usesClaude ? 'Claude' : 'Codex');
       const success = result.code === 0;
       const message = success

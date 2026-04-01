@@ -8,13 +8,14 @@ import {
   toggleBold, toggleItalic, toggleUnderline, toggleStrike,
   alignLeft, alignCenter, alignRight,
   popoverTextInput, popoverApplyText, popoverTextColorInput, popoverBgColorInput,
-  popoverSizeInput, popoverApplySize,
+  popoverSizeInput, popoverApplySize, btnDeleteObject,
 } from './editor-dom.js';
 import {
   currentSlideFile, getSlideState, setStatus, clamp,
   normalizeHexColor, parsePixelValue, isBoldFontWeight,
 } from './editor-utils.js';
 import { renderBboxes, scaleSlide, clientToSlidePoint, getXPath } from './editor-bbox.js';
+import { mutateSelectedObject, pushToHistory } from './editor-direct-edit.js';
 
 function isElementNode(node) {
   return Boolean(node) && node.nodeType === Node.ELEMENT_NODE;
@@ -58,11 +59,9 @@ export function getSelectableTargetAt(clientX, clientY) {
   const doc = slideIframe.contentDocument;
   if (!doc) return null;
 
-  const point = clientToSlidePoint(clientX, clientY);
-  let node = doc.elementFromPoint(point.x, point.y);
-  while (node && !isSelectableElement(node)) {
-    node = node.parentElement;
-  }
+  // iframe 내부에서 발생한 이벤트이므로 좌표 변환 없이 직접 사용
+  let node = doc.elementFromPoint(clientX, clientY);
+  // 만약 자식 노드가 더 있다면, 가급적 가장 깊숙한(Deepest) 텍스트 노드를 감싸는 엘리먼트를 찾음
   return isElementNode(node) ? node : null;
 }
 
@@ -259,4 +258,68 @@ export function updateHoveredObjectFromPointer(clientX, clientY) {
 export function clearHoveredObject() {
   state.hoveredObjectXPath = '';
   renderObjectSelection();
+}
+
+export function initDragAndDrop() {
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+  let initialTranslateX = 0;
+  let initialTranslateY = 0;
+
+  objectSelectedBox.addEventListener('mousedown', (e) => {
+    const el = getSelectedObjectElement();
+    if (!el) return;
+
+    // 드래그 시작 전 상태를 히스토리에 미리 저장 (Undo용)
+    pushToHistory();
+
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+
+    const transform = window.getComputedStyle(el).transform;
+    if (transform && transform !== 'none') {
+      const matrix = transform.match(/matrix\((.+)\)/);
+      if (matrix) {
+        const values = matrix[1].split(', ');
+        initialTranslateX = parseFloat(values[4]);
+        initialTranslateY = parseFloat(values[5]);
+      }
+    } else {
+      initialTranslateX = 0;
+      initialTranslateY = 0;
+    }
+
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+
+    const el = getSelectedObjectElement();
+    if (!el) return;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+
+    const nx = initialTranslateX + dx;
+    const ny = initialTranslateY + dy;
+
+    el.style.transform = `translate(${nx}px, ${ny}px)`;
+    renderObjectSelection(); // 박스 레이어도 함께 이동
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+
+    const el = getSelectedObjectElement();
+    if (!el) return;
+
+    // 위치 변경 사항 영구 저장
+    mutateSelectedObject((selected) => {
+      selected.style.transform = el.style.transform;
+    }, 'Object moved.', { skipHistory: true });
+  });
 }
