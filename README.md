@@ -47,8 +47,18 @@ Read https://raw.githubusercontent.com/vkehfdl1/slides-grab/main/docs/installati
 Or use the repo directly if you want to develop on slides-grab itself:
 
 ```bash
-git clone https://github.com/biniguni/slides-grab.git && cd slides-grab
+git clone https://github.com/vkehfdl1/slides-grab.git && cd slides-grab
 npm ci && npx playwright install chromium
+```
+
+> Requires **Node.js >= 18**.
+
+### No-clone install
+
+```bash
+npm install slides-grab
+npx playwright install chromium
+npx skills add ./node_modules/slides-grab -g -a codex -a claude-code --yes --copy
 ```
 
 ### 🚀 Gemini 연동 및 실행 방법 (Team Edition)
