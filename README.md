@@ -47,30 +47,32 @@ Read https://raw.githubusercontent.com/vkehfdl1/slides-grab/main/docs/installati
 Or use the repo directly if you want to develop on slides-grab itself:
 
 ```bash
-git clone https://github.com/vkehfdl1/slides-grab.git && cd slides-grab
+git clone https://github.com/biniguni/slides-grab.git && cd slides-grab
 npm ci && npx playwright install chromium
 ```
 
-> Requires **Node.js >= 18**.
+### 🚀 Gemini 연동 및 실행 방법 (Team Edition)
 
-### No-clone install (가장 권장하는 방법)
+이 버전은 팀 차원에서의 원활한 활용을 위해 **Google Gemini API**가 내장된 **커스텀 에디터**입니다. 팀원들은 아래 과정을 통해 즉시 에디터를 사용할 수 있습니다.
 
-Git을 설치하거나 복잡한 과정 없이, 아래 명령어 한 줄로 사용자님이 만드신 **커스텀 에디터**를 즉시 설치할 수 있습니다.
+#### 0. 필수 환경 (Node.js 설치)
+이 에디터는 파일 저장 및 AI 기능을 위해 **Node.js(18.x 이상)**가 반드시 필요합니다.
+- **다운로드**: [Node.js 공식 홈페이지 (LTS 버전 추천)](https://nodejs.org/)
+- **확인**: 터미널에서 `node -v` 입력 시 버전이 나오면 성공입니다.
+
+#### 1. 빠른 설치 (No-Clone Install)
+Git을 설치하거나 저장소를 복제할 필요 없이, 명령어 한 줄로 설치합니다.
 
 ```bash
-# 1. 사용자님의 GitHub 저장소에서 바로 설치 (가장 확실한 방법)
+# 1. 저장소에서 직접 설치
 npm install https://github.com/biniguni/slides-grab.git
 
 # 2. 브라우저 엔진 설치
 npx playwright install chromium
 ```
 
-### 🚀 Gemini 연동 및 실행 방법 (Team Edition)
-
-이 레포지토리의 커스텀 버전은 팀 차원에서의 원활한 활용을 위해 **Google Gemini API**가 직접 내장되어 있습니다. 별도의 에이전트 CLI(Claude Code 등) 설치 없이도 즉시 사용 가능합니다.
-
-#### 1. 사전 준비
-터미널(또는 시스템 환경변수)에 본인의 Gemini API Key를 등록해야 합니다. (기본 모델: **Gemini 1.5 Flash**)
+#### 2. 사전 준비 (API Key 등록)(업데이트 예정)
+터미널에 본인의 Gemini API Key를 등록해야 합니다.
 
 ```bash
 # Windows (PowerShell)
@@ -80,20 +82,14 @@ $env:GEMINI_API_KEY="본인의_API_키"
 export GEMINI_API_KEY="본인의_API_키"
 ```
 
-#### 2. 에디터 실행
-설치 후 아래 명령어를 통해 비주얼 에디터를 실행할 수 있습니다.
+#### 3. 에디터 실행 및 작업
+앞선 단계에서 설치가 완료되었다면, 아래 명령어로 에디터를 실행하고 브라우저(`http://localhost:3456`)로 접속하세요.
 
 ```bash
-# 의존성 설치 (최초 1회)
-npm install
-
-# 방법 A: 기본 실행 (slides/ 폴더 내 파일 편집)
-npm run edit
-
-# 방법 B: 특정 HTML 파일 하나만 바로 편집하기 (추천)
+# 방법 A: 특정 HTML 파일 하나만 바로 편집하기 (추천)
 node scripts/editor-server.js 내파일.html
 
-# 방법 C: 현재 폴더의 모든 HTML 파일 목록 보기
+# 방법 B: 현재 폴더의 모든 HTML 파일 목록 보기
 node scripts/editor-server.js .
 ```
 
