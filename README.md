@@ -66,7 +66,7 @@ npx skills add ./node_modules/slides-grab -g -a codex -a claude-code --yes --cop
 이 레포지토리의 커스텀 버전은 팀 차원에서의 원활한 활용을 위해 **Google Gemini API**가 직접 내장되어 있습니다. 별도의 에이전트 CLI(Claude Code 등) 설치 없이도 즉시 사용 가능합니다.
 
 #### 1. 사전 준비
-터미널(또는 시스템 환경변수)에 본인의 Gemini API Key를 등록해야 합니다. (기본 모델: **Gemini 1.5 Flash**)
+터미널(또는 시스템 환경변수)에 본인의 Gemini API Key를 등록해야 합니다.
 
 ```bash
 # Windows (PowerShell)
